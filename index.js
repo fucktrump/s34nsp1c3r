@@ -15,12 +15,14 @@ const T = new Twit({
 const sendTweet = (mention = '', data = {}) => {
   const password = generatePassword(8, false)
   const status = mention
-    ? `${mention} ${password}`
+    ? `@${mention} ${password}`
     : password
 
-  T.post('statuses/update', Object.assign({ status }, data))
-
-  console.log(`tweeted: ${status}`)
+  T.post('statuses/update', Object.assign({ status }, data), (err, data, response) => {
+    console.log(`tweeted: ${status}`)
+    console.log(err)
+    console.log(data)
+  })
 }
 
 const schedule = later.parse.recur().on(
@@ -31,14 +33,18 @@ const schedule = later.parse.recur().on(
 
 later.setInterval(sendTweet, schedule)
 
-T.stream('user', { follow: ['PressSec'] })
+T.stream('user')
   .on('tweet', (tweet) => {
-    sendTweet('@PressSec', {
-      in_reply_to_status_id: tweet.id_str
-    })
+    console.log(tweet)
+
+    if (tweet.user.screen_name !== 'Press5ec' && tweet.user.screen_name !== 's34nsp1c3r') {
+      sendTweet(tweet.user.screen_name, {
+        in_reply_to_status_id: tweet.id_str,
+      })
+    }
   })
 
-sendTweet('@PressSec')
+sendTweet('PressSec')
 
 if (process.env.APP_URL) {
   console.log('setting up ping')
