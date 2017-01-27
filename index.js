@@ -24,13 +24,13 @@ const tweet = () => {
 
 tweet()
 
-const timers = [
-  later.parse.text('at 8:42 am'),
-  later.parse.text('at 6:59 am'),
-  later.parse.text('at 6:52 pm'),
-].map(schedule => {
-  later.setInterval(tweet, schedule)
-})
+const schedule = later.parse.recur().on(
+  '11:59:00',
+  '13:42:00',
+  '23:52:00'
+).time()
+
+later.setInterval(tweet, schedule)
 
 if (process.env.APP_URL) {
   console.log('setting up ping')
@@ -40,7 +40,7 @@ if (process.env.APP_URL) {
     console.log('ping')
   })
 
-  server.listen(process.env.PORT, () => {
+  server.listen(process.env.PORT || 1337, () => {
     const ping = () => {
       http.get(process.env.APP_URL)
     }
