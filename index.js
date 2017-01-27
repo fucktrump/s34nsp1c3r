@@ -2,6 +2,7 @@ require('dotenv').config()
 const Twit = require('twit')
 const later = require('later')
 const generatePassword = require('password-generator')
+const http = require('http')
 
 const T = new Twit({
   consumer_key: process.env.CONSUMER_KEY,
@@ -12,7 +13,7 @@ const T = new Twit({
 })
 
 const tweet = () => {
-  const password = generatePassword()
+  const password = generatePassword(8, false)
 
   T.post('statuses/update', {
     status: password
@@ -20,6 +21,8 @@ const tweet = () => {
 
   console.log(`tweeted: ${password}`)
 }
+
+tweet()
 
 const timers = [
   later.parse.text('at 8:42 am'),
@@ -29,4 +32,20 @@ const timers = [
   later.setInterval(tweet, schedule)
 })
 
-tweet()
+if (process.env.APP_URL) {
+  console.log('setting up ping')
+
+  const server = http.createServer((request, response) => {
+    response.end('n9y25ah7')
+    console.log('ping')
+  })
+
+  server.listen(process.env.PORT, () => {
+    const ping = () => {
+      http.get(process.env.APP_URL)
+    }
+
+    ping()
+    setInterval(ping, 300000) // 5 minutes
+  })
+}
