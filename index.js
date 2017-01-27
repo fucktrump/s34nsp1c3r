@@ -12,17 +12,16 @@ const T = new Twit({
   timeout_ms: 60 * 1000,
 })
 
-const tweet = () => {
+const sendTweet = (mention = '', data = {}) => {
   const password = generatePassword(8, false)
+  const status = mention
+    ? `${mention} ${password}`
+    : password
 
-  T.post('statuses/update', {
-    status: password
-  })
+  T.post('statuses/update', Object.assign({ status }, data))
 
-  console.log(`tweeted: ${password}`)
+  console.log(`tweeted: ${status}`)
 }
-
-tweet()
 
 const schedule = later.parse.recur().on(
   '11:59:00',
@@ -30,7 +29,16 @@ const schedule = later.parse.recur().on(
   '23:52:00'
 ).time()
 
-later.setInterval(tweet, schedule)
+later.setInterval(sendTweet, schedule)
+
+T.stream('user', { follow: ['PressSec'] })
+  .on('tweet', (tweet) => {
+    sendTweet('@PressSec', {
+      in_reply_to_status_id: tweet.id_str
+    })
+  })
+
+sendTweet('@PressSec')
 
 if (process.env.APP_URL) {
   console.log('setting up ping')
