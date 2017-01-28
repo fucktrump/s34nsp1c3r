@@ -35,9 +35,9 @@ later.setInterval(sendTweet, schedule)
 
 T.stream('user')
   .on('tweet', (tweet) => {
-    console.log(tweet)
+    const user = tweet.user.screen_name
 
-    if (tweet.user.screen_name !== 'Press5ec' && tweet.user.screen_name !== 's34nsp1c3r') {
+    if (!tweet.retweeted_status && user !== 'Press5ec' && user !== 's34nsp1c3r') {
       sendTweet(tweet.user.screen_name, {
         in_reply_to_status_id: tweet.id_str,
       })
