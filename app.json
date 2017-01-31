@@ -1,0 +1,44 @@
+{
+  "name": "s34nsp1c3r",
+  "logo": "http://68.media.tumblr.com/5b0d4d1219190d89aae83ef3d742c227/tumblr_n3tlokq0It1ty9a4lo1_1280.png",
+  "repository": "https://github.com/fucktrump/s34nsp1c3r",
+  "success_url": "/",
+  "addons": [],
+  "keywords": ["node", "twitter", "bot", "antifa", "trump"],
+  "env": {
+    "HEROKU_URL": {
+      "description": "The URL of this Heroku app.",
+      "value": "https://YOURAPPNAME.herokuapp.com"
+    },
+    "SCREEN_NAME": {
+      "description": "Your bot's twitter handle, without the @.",
+      "required": true,
+      "value": ""
+    },
+    "CONSUMER_KEY": {
+      "description": "Twitter consumer key.",
+      "required": true,
+      "value": ""
+    },
+    "CONSUMER_SECRET": {
+      "description": "Twitter consumer secret.",
+      "required": true,
+      "value": ""
+    },
+    "ACCESS_KEY": {
+      "description": "Twitter consumer key.",
+      "required": true,
+      "value": ""
+    },
+    "ACCESS_SECRET": {
+      "description": "Twitter access secret.",
+      "required": true,
+      "value": ""
+    },
+    "TZ": {
+      "description": "Timezone.",
+      "required": false,
+      "value": "America/New_York"
+    }
+  }
+}

@@ -12,54 +12,60 @@ const T = new Twit({
   timeout_ms: 60 * 1000,
 })
 
-const sendTweet = (mention = '', data = {}) => {
-  const password = generatePassword(8, false)
-  const status = mention
-    ? `@${mention} ${password}`
-    : password
+// Well, this is it.
+const createTweet = () => {
+  return generatePassword(8, false)
+}
 
-  T.post('statuses/update', Object.assign({ status }, data), (err, data, response) => {
-    console.log(`tweeted: ${status}`)
-    console.log(err)
-    console.log(data)
+// Post a tweet with an optional tweet to reply to.
+const postTweet = (inReplyToTweet) => {
+  const status = createTweet(inReplyToTweet)
+
+  const options = !inReplyToTweet
+    ? { status }
+    : {
+      status: `@${inReplyToTweet.user.screen_name} ${status}`,
+      in_reply_to_status_id: inReplyToTweet.id_str,
+    }
+
+  T.post('statuses/update', options, (err, data, response) => {
+    console.log(`tweeted: ${options.status}`)
   })
 }
 
+// Schedule tweets using later: https://bunkat.github.io/later/
 const schedule = later.parse.recur().on(
+  // These were the times (in UTC, interpreted in EST)
+  // when @PressSec tweeted mysterious 8-character strings.
   '11:59:00',
   '13:42:00',
   '23:52:00'
 ).time()
 
-later.setInterval(sendTweet, schedule)
+later.setInterval(postTweet, schedule)
 
+// Subscribe to the user stream and listen for tweets
 T.stream('user')
   .on('tweet', (tweet) => {
-    const user = tweet.user.screen_name
-
-    if (!tweet.retweeted_status && user !== 'Press5ec' && user !== 's34nsp1c3r') {
-      sendTweet(tweet.user.screen_name, {
-        in_reply_to_status_id: tweet.id_str,
-      })
+    // Ignore retweets and the bot itself.
+    if (!tweet.retweeted_status && tweet.user.screen_name !== process.env.SCREEN_NAME) {
+      postTweet(tweet)
     }
   })
 
-sendTweet('PressSec')
-
-if (process.env.APP_URL) {
-  console.log('setting up ping')
-
-  const server = http.createServer((request, response) => {
-    response.end('n9y25ah7')
-    console.log('ping')
+if (process.env.HEROKU_URL) {
+  const server = http.createServer((req, res) => {
+    res.end(createTweet())
   })
 
   server.listen(process.env.PORT || 1337, () => {
     const ping = () => {
-      http.get(process.env.APP_URL)
+      console.log('ping')
+      http.get(process.env.HEROKU_URL)
     }
 
     ping()
-    setInterval(ping, 300000) // 5 minutes
+    // Ping the server every 5 minutes to keep the bot running.
+    setInterval(ping, 300000)
   })
 }
