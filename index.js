@@ -3,6 +3,7 @@ const Twit = require('twit')
 const later = require('later')
 const generatePassword = require('password-generator')
 const http = require('http')
+const zalgo = require('zalgolize')
 
 const T = new Twit({
   consumer_key: process.env.CONSUMER_KEY,
@@ -14,7 +15,11 @@ const T = new Twit({
 
 // Well, this is it.
 const createTweet = () => {
-  return generatePassword(8, false)
+  const password = generatePassword(8, false)
+
+  return process.env.ZALGO
+    ? zalgo(password, 0.7, [2, 1, 2])
+    : password
 }
 
 // Post a tweet with an optional tweet to reply to.
