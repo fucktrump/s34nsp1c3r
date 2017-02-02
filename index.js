@@ -38,14 +38,16 @@ const postTweet = (inReplyToTweet) => {
   })
 }
 
-// Schedule tweets using later: https://bunkat.github.io/later/
-const schedule = later.parse.recur().on(
-  // These were the times (in UTC, interpreted in EST)
-  // when @PressSec tweeted mysterious 8-character strings.
-  '11:59:00',
-  '13:42:00',
-  '23:52:00'
-).time()
+if (process.env.SCHEDULE) {
+  // Schedule tweets using later: https://bunkat.github.io/later/
+  const schedule = later.parse.recur().on(
+    // These were the times (in UTC, interpreted in EST)
+    // when @PressSec tweeted mysterious 8-character strings.
+    '11:59:00',
+    '13:42:00',
+    '23:52:00'
+  ).time()
+}
 
 later.setInterval(postTweet, schedule)
 

@@ -16,7 +16,12 @@
       "value": ""
     },
     "ZALGO": {
-      "description": "Zalgo.",
+      "description": "Zalgo. 1 for true, blank for false.",
+      "required": false,
+      "value": ""
+    },
+    "SCHEDULED": {
+      "description": "Whether to schedule 3 tweets throughout the day. 1 for true, blank for false.",
       "required": false,
       "value": ""
     },
