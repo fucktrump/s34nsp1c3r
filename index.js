@@ -47,9 +47,9 @@ if (process.env.SCHEDULE) {
     '13:42:00',
     '23:52:00'
   ).time()
-}
 
-later.setInterval(postTweet, schedule)
+  later.setInterval(postTweet, schedule)
+}
 
 // Subscribe to the user stream and listen for tweets
 T.stream('user')
